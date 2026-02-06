@@ -1,0 +1,7 @@
+/* Home Page Styles */
+
+h1 {
+    color: var(--bs-primary);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}

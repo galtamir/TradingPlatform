@@ -1,0 +1,99 @@
+/* Admin Data Management - Scoped Styles */
+
+h1 {
+    color: var(--bs-primary);
+    margin-bottom: 0.5rem;
+}
+
+/* Stats Cards */
+.stats-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stats-card-primary {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, #4a6cf7 100%);
+    color: white;
+}
+
+.stats-card-success {
+    background: linear-gradient(135deg, var(--bs-success) 0%, #28a745 100%);
+    color: white;
+}
+
+.stats-card-info {
+    background: linear-gradient(135deg, var(--bs-info) 0%, #17a2b8 100%);
+    color: white;
+}
+
+.stats-card-warning {
+    background: linear-gradient(135deg, var(--bs-warning) 0%, #ffc107 100%);
+    color: #212529;
+}
+
+.stats-card .display-6 {
+    font-weight: 700;
+}
+
+/* Table Styling */
+.table-responsive {
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    border-bottom: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(var(--bs-primary-rgb), 0.05);
+}
+
+/* Tab Navigation */
+.nav-tabs .nav-link {
+    border: none;
+    color: var(--bs-secondary);
+    font-weight: 500;
+    padding: 0.75rem 1.25rem;
+    transition: color 0.15s ease-in-out;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--bs-primary);
+    border-color: transparent;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--bs-primary);
+    border-bottom: 2px solid var(--bs-primary);
+    background: transparent;
+}
+
+/* Form Styling */
+.form-label {
+    font-weight: 500;
+    color: var(--bs-secondary);
+}
+
+/* Badges */
+.badge {
+    font-weight: 500;
+}
+
+/* Action Buttons */
+.btn-sm {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}

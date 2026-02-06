@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/src/Presentation/">
+    <Project Path="src/Presentation/Trading.Web/Trading.Web.csproj" />
+    <Project Path="src/Presentation/Trading.Web.Client/Trading.Web.Client.csproj" />
+    <Project Path="src/Presentation/Trading.Shared.UI/Trading.Shared.UI.csproj" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Infrastructure/">
+    <Project Path="src/Infrastructure/Trading.Contracts/Trading.Contracts.csproj" />
+    <Project Path="src/Infrastructure/Trading.Persistence/Trading.Persistence.csproj" />
+  </Folder>
+  <Folder Name="/src/Orchestration/">
+    <Project Path="src/Orchestration/Trading.AppHost/Trading.AppHost.csproj" />
+    <Project Path="src/Orchestration/Trading.ServiceDefaults/Trading.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Trading.AppHost.Tests/Trading.AppHost.Tests.csproj" />
+    <Project Path="tests/Trading.Unit.Tests/Trading.Unit.Tests.csproj" />
+  </Folder>
+</Solution>

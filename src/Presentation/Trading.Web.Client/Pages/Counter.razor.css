@@ -1,0 +1,28 @@
+/* Counter Page Styles */
+
+h1 {
+    color: var(--bs-success);
+    font-weight: 700;
+}
+
+p[role="status"] {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--bs-primary);
+    margin: 1.5rem 0;
+}
+
+button {
+    font-size: 1.1rem;
+    padding: 0.75rem 2rem;
+    transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--bs-primary-rgb), 0.3);
+}
+
+button:active {
+    transform: translateY(0);
+}

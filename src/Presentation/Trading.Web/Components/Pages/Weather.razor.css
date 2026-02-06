@@ -1,0 +1,32 @@
+/* Weather Page Styles */
+
+h1 {
+    color: var(--bs-info);
+    margin-bottom: 1rem;
+}
+
+.table {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.table thead {
+    background: linear-gradient(135deg, var(--bs-info) 0%, #17a2b8 100%);
+    color: white;
+}
+
+.table thead th {
+    border: none;
+    font-weight: 600;
+    padding: 1rem;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(var(--bs-info-rgb), 0.05);
+    transition: background-color 0.2s ease;
+}
+
+.table tbody td {
+    padding: 0.75rem 1rem;
+}
