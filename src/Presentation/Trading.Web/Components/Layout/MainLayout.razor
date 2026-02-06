@@ -3,7 +3,7 @@
 
 <div class="page">
     <div class="sidebar">
-        <NavMenu @ref="_navMenu" />
+        <NavMenu OnLoginRequested="ShowLoginModal" />
     </div>
 
     <main>
@@ -17,7 +17,7 @@
     </main>
 </div>
 
-<LoginModal @bind-IsVisible="_navMenu.ShowLogin" />
+<LoginModal @bind-IsVisible="_showLoginModal" />
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
@@ -26,5 +26,10 @@
 </div>
 
 @code {
-    private NavMenu _navMenu = default!;
+    private bool _showLoginModal;
+
+    private void ShowLoginModal()
+    {
+        _showLoginModal = true;
+    }
 }

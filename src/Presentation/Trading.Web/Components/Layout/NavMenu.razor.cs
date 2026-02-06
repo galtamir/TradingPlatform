@@ -8,8 +8,10 @@ public partial class NavMenu : IDisposable
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
 
+    [Parameter]
+    public EventCallback OnLoginRequested { get; set; }
+
     protected string? CurrentUrl { get; private set; }
-    public bool ShowLogin { get; set; }
 
     protected override void OnInitialized()
     {
@@ -23,9 +25,9 @@ public partial class NavMenu : IDisposable
         StateHasChanged();
     }
 
-    protected void ShowLoginModal()
+    protected async Task HandleLoginClick()
     {
-        ShowLogin = true;
+        await OnLoginRequested.InvokeAsync();
     }
 
     public void Dispose()
