@@ -9,6 +9,7 @@ public partial class NavMenu : IDisposable
     private NavigationManager NavigationManager { get; set; } = default!;
 
     protected string? CurrentUrl { get; private set; }
+    public bool ShowLogin { get; set; }
 
     protected override void OnInitialized()
     {
@@ -20,6 +21,11 @@ public partial class NavMenu : IDisposable
     {
         CurrentUrl = NavigationManager.ToBaseRelativePath(e.Location);
         StateHasChanged();
+    }
+
+    protected void ShowLoginModal()
+    {
+        ShowLogin = true;
     }
 
     public void Dispose()

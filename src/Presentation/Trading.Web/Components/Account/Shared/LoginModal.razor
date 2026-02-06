@@ -1,0 +1,103 @@
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Identity
+@using Trading.Web.Data
+
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject ILogger<LoginModal> Logger
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+@if (IsVisible)
+{
+    <div class="modal-overlay" @onclick="Close">
+        <div class="modal-container" @onclick:stopPropagation="true">
+            <button class="modal-close" @onclick="Close" aria-label="Close">
+                <span>&times;</span>
+            </button>
+
+            <div class="modal-header">
+                <h2>Welcome Back</h2>
+                <p class="modal-subtitle">Sign in to your account</p>
+            </div>
+
+            <div class="modal-body">
+                @if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    <div class="alert-error">
+                        <span class="alert-icon">⚠</span>
+                        <span>@ErrorMessage</span>
+                    </div>
+                }
+
+                <EditForm EditContext="EditContext" method="post" OnSubmit="LoginUser" FormName="loginModal">
+                    <DataAnnotationsValidator />
+                    
+                    <div class="form-group">
+                        <label for="modal-email">Email Address</label>
+                        <div class="input-with-icon">
+                            <span class="input-icon">📧</span>
+                            <InputText @bind-Value="Input.Email" 
+                                       id="modal-email" 
+                                       class="form-input" 
+                                       autocomplete="username webauthn" 
+                                       placeholder="you@example.com" />
+                        </div>
+                        <ValidationMessage For="() => Input.Email" class="validation-message" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modal-password">Password</label>
+                        <div class="input-with-icon">
+                            <span class="input-icon">🔒</span>
+                            <InputText type="password" 
+                                       @bind-Value="Input.Password" 
+                                       id="modal-password" 
+                                       class="form-input" 
+                                       autocomplete="current-password" 
+                                       placeholder="Enter your password" />
+                        </div>
+                        <ValidationMessage For="() => Input.Password" class="validation-message" />
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox-label">
+                            <InputCheckbox @bind-Value="Input.RememberMe" class="checkbox-input" />
+                            <span>Remember me</span>
+                        </label>
+                        <a href="Account/ForgotPassword" class="link-primary">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn-primary-large" disabled="@IsLoading">
+                        @if (IsLoading)
+                        {
+                            <span class="spinner"></span>
+                            <span>Signing in...</span>
+                        }
+                        else
+                        {
+                            <span>Sign In</span>
+                        }
+                    </button>
+
+                    <div class="divider">
+                        <span>OR</span>
+                    </div>
+
+                    <PasskeySubmit Operation="PasskeyOperation.Request" 
+                                   Name="Input.Passkey" 
+                                   EmailName="Input.Email" 
+                                   class="btn-passkey">
+                        <span class="passkey-icon">🔑</span>
+                        <span>Sign in with Passkey</span>
+                    </PasskeySubmit>
+                </EditForm>
+
+                <div class="modal-footer">
+                    <p>Don't have an account? <a href="@GetRegisterUrl()" class="link-primary">Sign up</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
