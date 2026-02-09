@@ -10,6 +10,7 @@
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject IUserActivityService ActivityService
 
 <PageTitle>Log in</PageTitle>
 
@@ -126,6 +127,10 @@
 
         if (result.Succeeded)
         {
+            var user = await UserManager.FindByEmailAsync(Input.Email);
+            if (user is not null)
+                await ActivityService.LogAsync(user.Id, Input.Email, "Login", "Password sign-in");
+
             Logger.LogInformation("User logged in.");
             RedirectManager.RedirectTo(ReturnUrl);
         }

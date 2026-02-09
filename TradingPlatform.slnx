@@ -3,6 +3,7 @@
     <Project Path="src/Presentation/Trading.Web/Trading.Web.csproj" />
     <Project Path="src/Presentation/Trading.Web.Client/Trading.Web.Client.csproj" />
     <Project Path="src/Presentation/Trading.Shared.UI/Trading.Shared.UI.csproj" />
+    <Project Path="src/Presentation/Trading.Admin/Trading.Admin.csproj" />
   </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/Infrastructure/">

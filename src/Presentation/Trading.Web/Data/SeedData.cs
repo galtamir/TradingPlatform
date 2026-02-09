@@ -41,6 +41,7 @@ public static class SeedData
         await SeedRolesAsync(sp, logger);
         await SeedAdminUserAsync(sp, logger);
         await SeedDemoUsersAsync(sp, logger);
+        await SeedActivityDataAsync(sp, logger);
 
         logger.LogInformation("Database initialization complete");
     }
@@ -126,5 +127,55 @@ public static class SeedData
                 logger.LogInformation("Seeded demo user: {Email}", email);
             }
         }
+    }
+
+    private static async Task SeedActivityDataAsync(IServiceProvider sp, ILogger logger)
+    {
+        var db = sp.GetRequiredService<ApplicationDbContext>();
+        if (await db.UserActivities.AnyAsync())
+            return;
+
+        var userManager = sp.GetRequiredService<UserManager<ApplicationUser>>();
+        var users = await userManager.Users.ToListAsync();
+        if (users.Count == 0) return;
+
+        var actions = new[]
+        {
+            ("Login", "Password sign-in"),
+            ("Login", "Modal sign-in"),
+            ("Logout", (string?)null),
+            ("PageView", "/"),
+            ("PageView", "/weather"),
+            ("PageView", "/admin/data"),
+            ("ProfileUpdate", "Changed display name"),
+            ("PasswordChange", "Password updated"),
+            ("PageView", "/Account/Manage"),
+        };
+
+        var random = new Random(42);
+        var activities = new List<UserActivity>();
+
+        for (var day = 30; day >= 0; day--)
+        {
+            var eventsToday = random.Next(3, 12);
+            for (var i = 0; i < eventsToday; i++)
+            {
+                var user = users[random.Next(users.Count)];
+                var (action, detail) = actions[random.Next(actions.Length)];
+                activities.Add(new UserActivity
+                {
+                    UserId = user.Id,
+                    UserEmail = user.Email ?? "",
+                    Action = action,
+                    Detail = detail,
+                    IpAddress = $"192.168.1.{random.Next(1, 255)}",
+                    Timestamp = DateTime.UtcNow.AddDays(-day).AddHours(random.Next(8, 22)).AddMinutes(random.Next(60))
+                });
+            }
+        }
+
+        db.UserActivities.AddRange(activities);
+        await db.SaveChangesAsync();
+        logger.LogInformation("Seeded {Count} activity records", activities.Count);
     }
 }

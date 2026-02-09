@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Trading.Persistence;
 using Trading.Web.Components;
 using Trading.Web.Components.Account;
 using Trading.Web.Data;
@@ -18,6 +19,9 @@ public class Program
 
         // Aspire-managed PostgreSQL for Identity
         builder.AddNpgsqlDbContext<ApplicationDbContext>("IdentityDb");
+
+        // Aspire-managed PostgreSQL for domain/business data
+        builder.AddNpgsqlDbContext<TradingDbContext>("TradingDb");
 
         // Aspire-managed Redis for output caching
         builder.AddRedisOutputCache("cache");
@@ -57,6 +61,10 @@ public class Program
 
         builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+        // User activity tracking
+        builder.Services.AddScoped<IUserActivityService, UserActivityService>();
+        builder.Services.AddHttpContextAccessor();
+
         // Authorization policies
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy("AdminOnly", policy => policy.RequireRole(SeedData.AdminRole));
@@ -69,6 +77,7 @@ public class Program
             app.UseWebAssemblyDebugging();
             app.UseMigrationsEndPoint();
             await SeedData.InitializeAsync(app.Services);
+            await TradingDbInitializer.InitializeAsync(app.Services);
         }
         else
         {

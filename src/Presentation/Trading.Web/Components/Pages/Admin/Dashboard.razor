@@ -1,0 +1,450 @@
+@page "/admin/dashboard"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = "AdminOnly")]
+@attribute [StreamRendering]
+@rendermode InteractiveServer
+
+<PageTitle>Admin Dashboard</PageTitle>
+
+<div class="dashboard-header">
+    <h1>Admin Dashboard</h1>
+    <p class="text-muted">Overview of platform activity, user management, and user flow analytics.</p>
+</div>
+
+<!-- KPI Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card kpi-card kpi-users">
+            <div class="card-body">
+                <div class="kpi-icon">👥</div>
+                <div class="kpi-content">
+                    <span class="kpi-value">@TotalUsers</span>
+                    <span class="kpi-label">Total Users</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card kpi-card kpi-active">
+            <div class="card-body">
+                <div class="kpi-icon">🟢</div>
+                <div class="kpi-content">
+                    <span class="kpi-value">@ActiveUsersLast7Days</span>
+                    <span class="kpi-label">Active (7d)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card kpi-card kpi-events">
+            <div class="card-body">
+                <div class="kpi-icon">📊</div>
+                <div class="kpi-content">
+                    <span class="kpi-value">@TotalEvents30Days</span>
+                    <span class="kpi-label">Events (30d)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card kpi-card kpi-signups">
+            <div class="card-body">
+                <div class="kpi-icon">🆕</div>
+                <div class="kpi-content">
+                    <span class="kpi-value">@NewUsersLast30Days</span>
+                    <span class="kpi-label">New Users (30d)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Tabs -->
+<ul class="nav nav-tabs mb-3" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link @(ActiveTab == "overview" ? "active" : "")"
+                @onclick='() => ActiveTab = "overview"' role="tab">
+            📈 Activity Overview
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link @(ActiveTab == "users" ? "active" : "")"
+                @onclick='() => ActiveTab = "users"' role="tab">
+            👤 User Management
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link @(ActiveTab == "flow" ? "active" : "")"
+                @onclick='() => ActiveTab = "flow"' role="tab">
+            🔄 User Flow
+        </button>
+    </li>
+</ul>
+
+@* ===== ACTIVITY OVERVIEW TAB ===== *@
+@if (ActiveTab == "overview")
+{
+    <div class="row">
+        <!-- Daily Activity Chart (text-based) -->
+        <div class="col-md-8 mb-4">
+            <div class="card">
+                <div class="card-header fw-semibold">Daily Activity (Last 30 Days)</div>
+                <div class="card-body">
+                    @if (DailyCounts is not null && DailyCounts.Count > 0)
+                    {
+                        <div class="activity-chart">
+                            @{ var maxCount = DailyCounts.Max(d => d.Count); }
+                            @foreach (var day in DailyCounts)
+                            {
+                                var pct = maxCount > 0 ? (int)(day.Count * 100.0 / maxCount) : 0;
+                                <div class="chart-row">
+                                    <span class="chart-label">@day.Date.ToString("MM/dd")</span>
+                                    <div class="chart-bar-container">
+                                        <div class="chart-bar" style="width: @(pct)%"></div>
+                                    </div>
+                                    <span class="chart-value">@day.Count</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No activity data yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Breakdown -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header fw-semibold">Action Breakdown (30d)</div>
+                <div class="card-body">
+                    @if (ActionSummary is not null && ActionSummary.Count > 0)
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var (action, count) in ActionSummary.OrderByDescending(x => x.Value))
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>@GetActionIcon(action) @action</span>
+                                    <span class="badge text-bg-primary rounded-pill">@count</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No data.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Feed -->
+    <div class="card mb-4">
+        <div class="card-header fw-semibold">Recent Activity</div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Time</th>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Detail</th>
+                            <th>IP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (RecentActivities is not null)
+                        {
+                            @foreach (var a in RecentActivities)
+                            {
+                                <tr>
+                                    <td class="text-nowrap">@a.Timestamp.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>@a.UserEmail</td>
+                                    <td><span class="badge action-badge">@GetActionIcon(a.Action) @a.Action</span></td>
+                                    <td class="text-muted">@(a.Detail ?? "—")</td>
+                                    <td class="text-muted font-monospace small">@(a.IpAddress ?? "—")</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@* ===== USER MANAGEMENT TAB ===== *@
+else if (ActiveTab == "users")
+{
+    @if (StatusMessage is not null)
+    {
+        <div class="alert @(IsError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="alert">
+            @StatusMessage
+            <button type="button" class="btn-close" @onclick="ClearStatus" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Search -->
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text">🔍</span>
+                <input type="text" class="form-control" placeholder="Search by email or name..."
+                       @bind="UserSearchTerm" @bind:event="oninput" />
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Display Name</th>
+                    <th>Email</th>
+                    <th>Roles</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Last Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (FilteredUsers is not null)
+                {
+                    @foreach (var user in FilteredUsers)
+                    {
+                        <tr>
+                            <td>@user.DisplayName</td>
+                            <td>@user.Email</td>
+                            <td>
+                                @foreach (var role in user.Roles)
+                                {
+                                    <span class="badge @(role == "Admin" ? "text-bg-danger" : "text-bg-secondary") me-1">@role</span>
+                                }
+                            </td>
+                            <td>
+                                @if (user.IsLockedOut)
+                                {
+                                    <span class="badge text-bg-danger">Locked</span>
+                                }
+                                else if (user.EmailConfirmed)
+                                {
+                                    <span class="badge text-bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge text-bg-warning">Unconfirmed</span>
+                                }
+                            </td>
+                            <td>@user.CreatedAt.ToString("yyyy-MM-dd")</td>
+                            <td class="text-muted">@(user.LastActive?.ToString("yyyy-MM-dd HH:mm") ?? "Never")</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    @if (!user.Roles.Contains("Admin"))
+                                    {
+                                        <button class="btn btn-outline-warning" title="Reset Password"
+                                                @onclick="() => ShowResetPassword(user.Id, user.Email)">
+                                            🔑
+                                        </button>
+                                        <button class="btn btn-outline-primary" title="Toggle Admin"
+                                                @onclick="() => ToggleAdminAsync(user.Id)">
+                                            ⬆️
+                                        </button>
+                                        @if (user.IsLockedOut)
+                                        {
+                                            <button class="btn btn-outline-success" title="Unlock"
+                                                    @onclick="() => UnlockUserAsync(user.Id)">
+                                                🔓
+                                            </button>
+                                        }
+                                        <button class="btn btn-outline-danger" title="Delete"
+                                                @onclick="() => DeleteUserAsync(user.Id)">
+                                            🗑️
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">Protected</span>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Password Reset Modal -->
+    @if (ShowPasswordReset)
+    {
+        <div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.5)">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Reset Password for @ResetEmail</h5>
+                        <button type="button" class="btn-close" @onclick="CloseResetPassword" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-control" @bind="NewPassword" placeholder="Min 8 chars, must include digit" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" @bind="ConfirmPassword" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" @onclick="CloseResetPassword">Cancel</button>
+                        <button class="btn btn-primary" @onclick="ResetPasswordAsync">Reset Password</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@* ===== USER FLOW TAB ===== *@
+else if (ActiveTab == "flow")
+{
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label class="form-label fw-semibold">Filter by User</label>
+            <select class="form-select" @bind="FlowUserFilter">
+                <option value="">All Users</option>
+                @if (AllUsers is not null)
+                {
+                    @foreach (var u in AllUsers)
+                    {
+                        <option value="@u.Id">@u.Email</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">Filter by Action</label>
+            <select class="form-select" @bind="FlowActionFilter">
+                <option value="">All Actions</option>
+                @if (ActionSummary is not null)
+                {
+                    @foreach (var action in ActionSummary.Keys.OrderBy(k => k))
+                    {
+                        <option value="@action">@action</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button class="btn btn-primary" @onclick="ApplyFlowFiltersAsync">Apply Filters</button>
+        </div>
+    </div>
+
+    <!-- User Journey / Flow Timeline -->
+    <div class="card mb-4">
+        <div class="card-header fw-semibold">
+            User Journey Timeline
+            @if (!string.IsNullOrEmpty(FlowUserFilter))
+            {
+                <span class="text-muted ms-2">— Filtered by user</span>
+            }
+        </div>
+        <div class="card-body">
+            @if (FlowActivities is not null && FlowActivities.Count > 0)
+            {
+                <div class="flow-timeline">
+                    @foreach (var activity in FlowActivities)
+                    {
+                        <div class="flow-item">
+                            <div class="flow-marker @GetActionColorClass(activity.Action)"></div>
+                            <div class="flow-content">
+                                <div class="flow-header">
+                                    <span class="fw-semibold">@activity.UserEmail</span>
+                                    <span class="text-muted small ms-2">@activity.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</span>
+                                </div>
+                                <div class="flow-action">
+                                    <span class="badge action-badge me-1">@GetActionIcon(activity.Action) @activity.Action</span>
+                                    @if (!string.IsNullOrEmpty(activity.Detail))
+                                    {
+                                        <span class="text-muted">@activity.Detail</span>
+                                    }
+                                </div>
+                                @if (!string.IsNullOrEmpty(activity.IpAddress))
+                                {
+                                    <div class="flow-meta text-muted small">IP: @activity.IpAddress</div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No activity data matching the current filters.</p>
+            }
+        </div>
+    </div>
+
+    <!-- Flow Summary: Page Visit Funnel -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header fw-semibold">Top Pages Visited</div>
+                <div class="card-body">
+                    @if (PageViewSummary is not null && PageViewSummary.Count > 0)
+                    {
+                        var maxPv = PageViewSummary.Max(x => x.Value);
+                        @foreach (var (pagePath, count) in PageViewSummary.OrderByDescending(x => x.Value))
+                        {
+                            var pvPct = maxPv > 0 ? (int)(count * 100.0 / maxPv) : 0;
+                            <div class="funnel-row mb-2">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="small fw-semibold">@pagePath</span>
+                                    <span class="small text-muted">@count visits</span>
+                                </div>
+                                <div class="progress" style="height: 8px">
+                                    <div class="progress-bar" role="progressbar" style="width: @(pvPct)%"></div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">No page view data.</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header fw-semibold">User Activity Ranking</div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>User</th>
+                                <th class="text-end">Events (30d)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (UserActivityRanking is not null)
+                            {
+                                @foreach (var (email, count) in UserActivityRanking)
+                                {
+                                    <tr>
+                                        <td>@email</td>
+                                        <td class="text-end"><span class="badge text-bg-info">@count</span></td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,197 @@
+/* Admin Dashboard - Scoped Styles */
+
+.dashboard-header h1 {
+    color: var(--bs-primary);
+    margin-bottom: 0.25rem;
+}
+
+/* KPI Cards */
+.kpi-card {
+    border: none;
+    border-radius: 0.75rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.kpi-card .card-body {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+}
+
+.kpi-icon {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.kpi-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.kpi-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.kpi-label {
+    font-size: 0.8rem;
+    color: var(--bs-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.kpi-users { background: linear-gradient(135deg, #e8f0fe 0%, #d2e3fc 100%); }
+.kpi-active { background: linear-gradient(135deg, #e6f4ea 0%, #ceead6 100%); }
+.kpi-events { background: linear-gradient(135deg, #fef7e0 0%, #fde293 100%); }
+.kpi-signups { background: linear-gradient(135deg, #fce8e6 0%, #f8c9c5 100%); }
+
+/* Activity Chart (bar chart) */
+.activity-chart {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.chart-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.chart-label {
+    width: 50px;
+    font-size: 0.7rem;
+    color: var(--bs-secondary);
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.chart-bar-container {
+    flex: 1;
+    background: var(--bs-gray-200);
+    border-radius: 4px;
+    height: 16px;
+    overflow: hidden;
+}
+
+.chart-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--bs-primary), #6ea8fe);
+    border-radius: 4px;
+    min-width: 2px;
+    transition: width 0.3s ease;
+}
+
+.chart-value {
+    width: 30px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--bs-body-color);
+    flex-shrink: 0;
+}
+
+/* Action Badge */
+.action-badge {
+    background: var(--bs-gray-200);
+    color: var(--bs-body-color);
+    font-weight: 500;
+}
+
+/* Tab styling */
+.nav-tabs .nav-link {
+    border: none;
+    color: var(--bs-secondary);
+    font-weight: 500;
+    padding: 0.75rem 1.25rem;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--bs-primary);
+    border-color: transparent;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--bs-primary);
+    border-bottom: 2px solid var(--bs-primary);
+    background: transparent;
+}
+
+/* Table */
+.table thead th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+}
+
+/* Flow Timeline */
+.flow-timeline {
+    position: relative;
+    padding-left: 2rem;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.flow-timeline::before {
+    content: '';
+    position: absolute;
+    left: 0.6rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--bs-gray-300);
+}
+
+.flow-item {
+    position: relative;
+    padding-bottom: 1rem;
+    padding-left: 0.5rem;
+}
+
+.flow-marker {
+    position: absolute;
+    left: -1.65rem;
+    top: 0.25rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px var(--bs-gray-400);
+}
+
+.flow-marker-login { background: var(--bs-success); box-shadow: 0 0 0 2px var(--bs-success); }
+.flow-marker-logout { background: var(--bs-danger); box-shadow: 0 0 0 2px var(--bs-danger); }
+.flow-marker-page { background: var(--bs-info); box-shadow: 0 0 0 2px var(--bs-info); }
+.flow-marker-other { background: var(--bs-warning); box-shadow: 0 0 0 2px var(--bs-warning); }
+
+.flow-content {
+    background: var(--bs-gray-100);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.flow-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.flow-action {
+    margin-top: 0.25rem;
+}
+
+.flow-meta {
+    margin-top: 0.15rem;
+}
+
+/* Funnel */
+.funnel-row .progress-bar {
+    background: linear-gradient(90deg, var(--bs-primary), #6ea8fe);
+}

@@ -1,0 +1,10 @@
+<Router AppAssembly="typeof(Program).Assembly">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.AdminLayout)">
+            <NotAuthorized>
+                <p class="text-danger mt-4">You are not authorized to view this page. Please log in as an admin.</p>
+            </NotAuthorized>
+        </AuthorizeRouteView>
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+</Router>

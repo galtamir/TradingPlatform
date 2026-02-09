@@ -1,0 +1,95 @@
+@using Trading.Web.Data
+
+<div class="user-panel">
+    <AuthorizeView>
+        <Authorized Context="authState">
+            <div class="user-menu-wrapper">
+                <button class="avatar-btn" @onclick="ToggleDropdown" @onclick:stopPropagation="true">
+                    <div class="avatar-circle">
+                        <span>@GetInitials(authState.User.Identity?.Name)</span>
+                    </div>
+                    <span class="user-name">@authState.User.Identity?.Name</span>
+                    <span class="chevron @(IsOpen ? "chevron-up" : "")">▾</span>
+                </button>
+
+                @if (IsOpen)
+                {
+                    <div class="dropdown-overlay" @onclick="CloseDropdown"></div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-header">
+                            <div class="avatar-circle avatar-large">
+                                <span>@GetInitials(authState.User.Identity?.Name)</span>
+                            </div>
+                            <div class="dropdown-user-info">
+                                <span class="dropdown-user-name">@authState.User.Identity?.Name</span>
+                                <AuthorizeView Policy="AdminOnly">
+                                    <span class="role-badge">Admin</span>
+                                </AuthorizeView>
+                            </div>
+                        </div>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a href="Account/Manage" class="dropdown-item" @onclick="CloseDropdown">
+                            <span class="dropdown-icon">👤</span>
+                            <span>My Profile</span>
+                        </a>
+                        <a href="Account/Manage/Email" class="dropdown-item" @onclick="CloseDropdown">
+                            <span class="dropdown-icon">📧</span>
+                            <span>Email Settings</span>
+                        </a>
+                        <a href="Account/Manage/ChangePassword" class="dropdown-item" @onclick="CloseDropdown">
+                            <span class="dropdown-icon">🔒</span>
+                            <span>Change Password</span>
+                        </a>
+                        <a href="Account/Manage/TwoFactorAuthentication" class="dropdown-item" @onclick="CloseDropdown">
+                            <span class="dropdown-icon">🛡️</span>
+                            <span>Two-Factor Auth</span>
+                        </a>
+                        <a href="Account/Manage/Passkeys" class="dropdown-item" @onclick="CloseDropdown">
+                            <span class="dropdown-icon">🔑</span>
+                            <span>Passkeys</span>
+                        </a>
+
+                        <AuthorizeView Policy="AdminOnly">
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-section-label">Administration</div>
+                            <a href="admin/dashboard" class="dropdown-item" @onclick="CloseDropdown">
+                                <span class="dropdown-icon">📊</span>
+                                <span>Dashboard</span>
+                            </a>
+                            <a href="admin/data" class="dropdown-item" @onclick="CloseDropdown">
+                                <span class="dropdown-icon">🗄️</span>
+                                <span>Data Management</span>
+                            </a>
+                        </AuthorizeView>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a href="Account/Manage/PersonalData" class="dropdown-item" @onclick="CloseDropdown">
+                            <span class="dropdown-icon">📋</span>
+                            <span>Personal Data</span>
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+
+                        <form action="Account/Logout" method="post">
+                            <AntiforgeryToken />
+                            <input type="hidden" name="ReturnUrl" value="/" />
+                            <button type="submit" class="dropdown-item dropdown-item-danger">
+                                <span class="dropdown-icon">🚪</span>
+                                <span>Sign Out</span>
+                            </button>
+                        </form>
+                    </div>
+                }
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <div class="auth-buttons">
+                <button class="btn-login" @onclick="OnLoginClicked">Sign In</button>
+                <a href="Account/Register" class="btn-register">Sign Up</a>
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>

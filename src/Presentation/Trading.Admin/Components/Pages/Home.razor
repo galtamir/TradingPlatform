@@ -1,0 +1,29 @@
+@page "/"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = "AdminOnly")]
+
+<PageTitle>Admin Portal</PageTitle>
+
+<h1>🛡️ Admin Portal</h1>
+<p class="text-muted">Welcome to the Trading Platform administration panel.</p>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">📊 Dashboard</h5>
+                <p class="card-text">View platform activity, KPIs, user management, and flow analytics.</p>
+                <a href="dashboard" class="btn btn-primary">Go to Dashboard</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">🗄️ Data Management</h5>
+                <p class="card-text">Manage users, roles, and system data.</p>
+                <a href="data" class="btn btn-primary">Go to Data</a>
+            </div>
+        </div>
+    </div>
+</div>

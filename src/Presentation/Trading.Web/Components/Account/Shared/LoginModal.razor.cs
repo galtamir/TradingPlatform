@@ -79,6 +79,10 @@ public partial class LoginModal
 
             if (result.Succeeded)
             {
+                var user = await UserManager.FindByEmailAsync(Input.Email);
+                if (user is not null)
+                    await ActivityService.LogAsync(user.Id, Input.Email, "Login", "Modal sign-in");
+
                 Logger.LogInformation("User logged in via modal.");
                 await Close();
                 RedirectManager.RedirectTo(ReturnUrl);

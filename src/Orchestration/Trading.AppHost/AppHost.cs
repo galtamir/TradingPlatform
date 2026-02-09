@@ -15,6 +15,7 @@ var postgres = builder.AddPostgres("postgres")
     .WithPgAdmin();
 
 var identityDb = postgres.AddDatabase("IdentityDb");
+var tradingDb = postgres.AddDatabase("TradingDb");
 
 // ========================================
 // WEB FRONTEND (Blazor + Identity)
@@ -23,8 +24,21 @@ var identityDb = postgres.AddDatabase("IdentityDb");
 builder.AddProject<Projects.Trading_Web>("trading-web")
     .WithReference(identityDb)
     .WaitFor(identityDb)
+    .WithReference(tradingDb)
+    .WaitFor(tradingDb)
     .WithReference(redis)
     .WaitFor(redis)
+    .WithExternalHttpEndpoints();
+
+// ========================================
+// ADMIN PORTAL (separate UI, same databases)
+// ========================================
+
+builder.AddProject<Projects.Trading_Admin>("trading-admin")
+    .WithReference(identityDb)
+    .WaitFor(identityDb)
+    .WithReference(tradingDb)
+    .WaitFor(tradingDb)
     .WithExternalHttpEndpoints();
 
 builder.Build().Run();

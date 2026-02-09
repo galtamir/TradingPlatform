@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Trading.Unit.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- Aspire integrations -->
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.1.0" />
     <PackageReference Include="Aspire.StackExchange.Redis.OutputCaching" Version="13.1.0" />
@@ -29,6 +33,7 @@
     <ProjectReference Include="..\Trading.Web.Client\Trading.Web.Client.csproj" />
     <ProjectReference Include="..\Trading.Shared.UI\Trading.Shared.UI.csproj" />
     <ProjectReference Include="..\..\Orchestration\Trading.ServiceDefaults\Trading.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Trading.Persistence\Trading.Persistence.csproj" />
   </ItemGroup>
 
 </Project>
